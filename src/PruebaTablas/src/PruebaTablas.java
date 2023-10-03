@@ -6,11 +6,19 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
 
 public class PruebaTablas extends JFrame {
     protected JTable tabla;
     protected JPanel panel;
     protected DefaultTableModel modelo;
+    protected JLabel etiqueta;
+    protected JPanel pnletiqueta;
+    protected boolean pintar;
+    protected int filaa;
+
 
     public PruebaTablas(){
         this.setSize(400,400);
@@ -20,10 +28,38 @@ public class PruebaTablas extends JFrame {
         modelo = new DefaultTableModel(new Object[]{"Nombre","Alta","Rango"},0);
         tabla = new JTable(modelo);
         modelo.addRow(new Object[]{"Pedro",2022,34});
+        modelo.addRow(new Object[]{"Juan",2003,89});
+
+        etiqueta = new JLabel("");
+        pnletiqueta = new JPanel();
+        pnletiqueta.add(etiqueta);
 
         panel.add(tabla);
         this.add(panel, BorderLayout.CENTER);
+        this.add(pnletiqueta, BorderLayout.SOUTH);
         this.setVisible(true);
+
+
+
+        tabla.addMouseMotionListener(new MouseMotionAdapter() {
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                //Hacer que la etiqueta muestre el valor de la celda
+                if (tabla.columnAtPoint(e.getPoint()) == 0){
+                    pintar = true;
+                    int fila = tabla.rowAtPoint(e.getPoint());
+                    filaa = fila;
+                    int columna = tabla.columnAtPoint(e.getPoint());
+                etiqueta.setText("Nombre: "+tabla.getValueAt(fila,columna)+ ", Año de alta: "+tabla.getValueAt(fila,columna+1) + ", Rango: " + tabla.getValueAt(fila,columna+2));
+            }else {
+                    etiqueta.setText("");
+                    pintar = false;
+                }
+
+            }
+        });
+
 
         tabla.setDefaultRenderer(Object.class, new DefaultTableCellRenderer(){
 
@@ -36,13 +72,19 @@ public class PruebaTablas extends JFrame {
                     barra.setMaximum(100); barra.setMinimum(0);
                     barra.setValue(Integer.parseInt(etiqueta.getText()));
                     return barra;
+                }else if (column == 0 && pintar==true && row == filaa){
+                    JLabel etiqueta = (JLabel) comp;
+                    comp.setBackground(Color.magenta);
+                    tabla.repaint();
+                    return etiqueta;
 
+                }else{
+                    comp.setBackground(Color.white);
+                    return comp;
                 }
-                return comp;
+
             }
         });
-
-
 
         tabla.setDefaultEditor(Object.class, new DefaultCellEditor(new JTextField()){
             JSpinner sp = new JSpinner();
