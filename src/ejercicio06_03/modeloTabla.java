@@ -48,7 +48,11 @@ public class modeloTabla implements TableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return false;
+        if(columnIndex != 0){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     @Override
@@ -56,7 +60,7 @@ public class modeloTabla implements TableModel {
         if (columnIndex == 0){
             return dataSetMunicipios.getListaMunicipios().get(rowIndex).getCodigo();
         } else if (columnIndex == 1) {
-            return dataSetMunicipios.getListaMunicipios().get(rowIndex).getNombre();
+            return (String)dataSetMunicipios.getListaMunicipios().get(rowIndex).getNombre();
         } else if (columnIndex == 2) {
             return dataSetMunicipios.getListaMunicipios().get(rowIndex).getHabitantes();
         } else if (columnIndex == 3) {
@@ -69,6 +73,16 @@ public class modeloTabla implements TableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        if (columnIndex == 1){
+        dataSetMunicipios.getListaMunicipios().get(rowIndex).setNombre(aValue.toString());
+        } else if (columnIndex == 2) {
+            dataSetMunicipios.getListaMunicipios().get(rowIndex).setHabitantes(Integer.parseInt(aValue.toString()));
+        } else if (columnIndex ==3) {
+            dataSetMunicipios.getListaMunicipios().get(rowIndex).setProvincia(aValue.toString());
+        } else{
+            dataSetMunicipios.getListaMunicipios().get(rowIndex).setAutonomia(aValue.toString());
+
+        }
 
     }
 
@@ -80,5 +94,9 @@ public class modeloTabla implements TableModel {
     @Override
     public void removeTableModelListener(TableModelListener l) {
 
+    }
+
+    public DataSetMunicipios getDataSetMunicipios() {
+        return dataSetMunicipios;
     }
 }

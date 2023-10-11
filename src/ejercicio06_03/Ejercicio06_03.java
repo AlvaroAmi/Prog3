@@ -42,7 +42,7 @@ public class Ejercicio06_03 {
 			}
 			// TODO Resolver el ejercicio 6.3
 			VentanaTablaDatos ventanaTablaDatos = new VentanaTablaDatos();
-			ventanaTablaDatos.setSize(500,300);
+			ventanaTablaDatos.setSize(700,500);
 			ventanaTablaDatos.setLocationRelativeTo(null);
 			ventanaTablaDatos.setVisible(true);
 			ventanaTablaDatos.setDatos(dataset);
