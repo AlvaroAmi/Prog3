@@ -5,21 +5,20 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
-public class VentanaTablaDatos extends JFrame {
+public class VentanaTablaDatosEj extends JFrame {
     protected JPanel pnlBotones;
     protected JPanel pnlTabla;
     protected JTable tabla;
     protected JButton anadir;
     protected JButton borrar;
     protected JScrollPane scroll;
-    modeloTabla modelo = new modeloTabla();
+    modeloTablaEj modelo = new modeloTablaEj();
 
-    VentanaTablaDatos(){
+    VentanaTablaDatosEj(){
         pnlBotones = new JPanel();
         pnlTabla = new JPanel();
         anadir = new JButton("Añadir");
@@ -35,7 +34,7 @@ public class VentanaTablaDatos extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int cod = modelo.getDataSetMunicipios().getListaMunicipios().size()+1;
-                modelo.getDataSetMunicipios().anyadir(new Municipio(cod,"",0,"",""));
+                modelo.getDataSetMunicipios().anyadir(new MunicipioEj(cod,"",0,"",""));
                 fireTableChanged(new TableModelEvent( modelo, 1, modelo.getDataSetMunicipios().getListaMunicipios().size()+1 ));
 
             }
@@ -60,7 +59,7 @@ public class VentanaTablaDatos extends JFrame {
 
 
     }
-    protected void setDatos(DataSetMunicipios dataset){
+    protected void setDatos(DataSetMunicipiosEj dataset){
 
 
         tabla = new JTable(modelo);

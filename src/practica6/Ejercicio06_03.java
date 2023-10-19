@@ -1,6 +1,7 @@
-package ejercicio06_03;
+package practica6;
 
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.swing.JButton;
@@ -8,10 +9,13 @@ import javax.swing.JFrame;
 
 public class Ejercicio06_03 {
 	
+	private static JFrame ventana;
 	private static DataSetMunicipios dataset;
+
+	private static VentanaTablaDatos ventanaDatos;
 	
 	public static void main(String[] args) {
-		JFrame ventana = new JFrame( "Ejercicio 6.3" );
+		ventana = new JFrame( "Ejercicio 6.3" );
 		ventana.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
 		ventana.setLocationRelativeTo( null );
 		ventana.setSize( 200, 80 );
@@ -22,18 +26,14 @@ public class Ejercicio06_03 {
 		bCargaMunicipios.addActionListener( new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				cargaMunicipios(ventana);
-				ventana.setVisible(false);
+				cargaMunicipios();
 			}
 		});
 		
 		ventana.setVisible( true );
-
-
 	}
-
 	
-	private static void cargaMunicipios(JFrame ventana) {
+	private static void cargaMunicipios() {
 		try {
 			dataset = new DataSetMunicipios( "municipios200k.txt" );
 			System.out.println( "Cargados municipios:" );
@@ -41,24 +41,12 @@ public class Ejercicio06_03 {
 				System.out.println( "\t" + m );
 			}
 			// TODO Resolver el ejercicio 6.3
-			VentanaTablaDatos ventanaTablaDatos = new VentanaTablaDatos();
-			ventanaTablaDatos.setSize(700,500);
-			ventanaTablaDatos.setLocationRelativeTo(null);
-			ventanaTablaDatos.setVisible(true);
-			ventanaTablaDatos.setDatos(dataset);
-			ventanaTablaDatos.addWindowListener(new WindowAdapter() {
-
-				@Override
-				public void windowClosing(WindowEvent e) {
-					ventana.setVisible(true);
-				}
-			});
+			ventanaDatos = new VentanaTablaDatos( ventana );
+			ventanaDatos.setDatos( dataset );
+			ventanaDatos.setVisible( true );
 		} catch (IOException e) {
 			System.err.println( "Error en carga de municipios" );
 		}
 	}
-
-
-
-
+	
 }

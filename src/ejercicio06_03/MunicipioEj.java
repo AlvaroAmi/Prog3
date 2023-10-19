@@ -2,7 +2,7 @@ package ejercicio06_03;
 
 /** Permite crear objetos municipio con información de población, provincia y comunidad autónoma
  */
-public class Municipio {
+public class MunicipioEj {
 	private int codigo;
 	private String nombre;
 	private int habitantes;
@@ -16,7 +16,7 @@ public class Municipio {
 	 * @param provincia	Nombre de su provincia
 	 * @param autonomia	Nombre de su comunidad autónoma
 	 */
-	public Municipio(int codigo, String nombre, int habitantes, String provincia, String autonomia) {
+	public MunicipioEj(int codigo, String nombre, int habitantes, String provincia, String autonomia) {
 		super();
 		this.codigo = codigo;
 		this.nombre = nombre;
