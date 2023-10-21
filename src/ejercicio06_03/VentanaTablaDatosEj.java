@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.*;
@@ -110,6 +111,34 @@ public class VentanaTablaDatosEj extends JFrame {
 
             }
         });
+
+        tabla.setDefaultEditor(Object.class,new DefaultCellEditor(new JTextField()){
+            JLabel lbl = null;
+            JSpinner spin = new JSpinner();
+            @Override
+            public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+                if (column == 2){
+                    lbl = new JLabel();
+                    spin.setValue(value);
+                    return spin;
+                }else{
+
+                lbl = null;
+                return super.getTableCellEditorComponent(table, value, isSelected, row, column);
+            }}
+
+            @Override
+            public Object getCellEditorValue() {
+                if (lbl != null) {
+
+                    return spin.getValue();
+                }else{
+                    return super.getCellEditorValue();
+                }
+            }
+        });
+
+
 
         tabla.addMouseMotionListener(new MouseMotionAdapter() {
 
