@@ -36,7 +36,7 @@ public class DatasetParaJTable implements TableModel {
 		return instanciaEjemplo.getColumnCount();
 	}
 
-	private final String[] cabeceras = { "Código", "Nombre", "Habitantes", "Provincia", "Autonomía" };
+	private final String[] cabeceras = { "Código", "Nombre", "Habitantes", "Superficie", "Capital", "Provincia", "Autonomía" };
 	@Override
 	public String getColumnName(int columnIndex) {
 		// System.out.println( "getColumnName " + columnIndex );

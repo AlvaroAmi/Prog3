@@ -1,10 +1,17 @@
 package practica6;
 
+import com.sun.source.tree.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 @SuppressWarnings("serial")
 public class VentanaTablaDatos extends JFrame {
@@ -13,23 +20,40 @@ public class VentanaTablaDatos extends JFrame {
 	
 	private JTable tablaDatos;
 	private DataSetMunicipios datosMunis;
-	// private DatasetParaJTable modeloDatos;  El propio dataset es también modelo de datos, no hace falta diferenciarlos
+	private JLabel mensaje;
+	private JTree tree;
+	private JPanel panelvisual;
+	private DefaultTreeModel modelotree;
+
 
 	private String autonomiaSeleccionada = "";
 	
 	public VentanaTablaDatos( JFrame ventOrigen ) {
 		setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
-		setSize( 800, 600 );
+		setSize( 900, 600 );
 		setLocationRelativeTo( null );
 		
 		tablaDatos = new JTable();
 		add( new JScrollPane( tablaDatos ), BorderLayout.CENTER );
-		
+
+		mensaje = new JLabel("");
+		this.add(mensaje,BorderLayout.NORTH);
+
+		tree = new JTree();
+		JScrollPane ptree = new JScrollPane(tree);
+		this.add(ptree,BorderLayout.WEST);
+
+		panelvisual = new JPanel();
+		this.add(panelvisual,BorderLayout.EAST);
+
+
 		JPanel pInferior = new JPanel();
 		JButton bAnyadir = new JButton( "Añadir" );
 		JButton bBorrar = new JButton( "Borrar" );
+		JButton bOrden = new JButton("Ordenar");
 		pInferior.add( bAnyadir );
 		pInferior.add( bBorrar );
+		pInferior.add(bOrden);
 		add( pInferior, BorderLayout.SOUTH );
 		
 		this.addWindowListener( new WindowAdapter() {
@@ -58,7 +82,7 @@ public class VentanaTablaDatos extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				int filaSel = tablaDatos.getSelectedRow();
 				if (filaSel>=0) {
-					datosMunis.anyadeFila( filaSel, new Municipio( datosMunis.getListaMunicipios().size()+1, "Nombre", 0, "Provincia", "Autonomía" ) );
+					datosMunis.anyadeFila( filaSel, new Municipio( datosMunis.getListaMunicipios().size()+1, "Nombre", 0, 0, "","","" ) );
 				}
 			}
 		});
@@ -66,14 +90,30 @@ public class VentanaTablaDatos extends JFrame {
 	}
 	
 	public void setDatos( DataSetMunicipios datosMunis ) {
+
+		DefaultMutableTreeNode raiz = new DefaultMutableTreeNode("Municipios");
+		modelotree = new DefaultTreeModel(raiz);
+		tree.setModel(modelotree);
+
+		HashMap mapa = (HashMap) datosMunis.getMapa();
+		for (int i = 0; i<mapa.keySet().size();i++){
+			DefaultMutableTreeNode autonomia = new DefaultMutableTreeNode(mapa.keySet().toArray()[i]);
+			modelotree.insertNodeInto(autonomia,raiz,i);
+				for (Object o : (ArrayList) mapa.get(mapa.keySet().toArray()[i])) {
+					DefaultMutableTreeNode provincia = new DefaultMutableTreeNode(o);
+					modelotree.insertNodeInto(provincia,autonomia,autonomia.getChildCount());
+
+				}
+
+
+
+		}
+
+
+
+
 		this.datosMunis = datosMunis;
 		tablaDatos.setModel( datosMunis );
-		
-		TableColumn col = tablaDatos.getColumnModel().getColumn( 0 );
-		col.setMaxWidth( 50 );
-		col = tablaDatos.getColumnModel().getColumn(2);
-		col.setMinWidth( 150 );
-		col.setMaxWidth( 150 );
 
 		tablaDatos.setDefaultRenderer( Integer.class, new DefaultTableCellRenderer() {
 			private JProgressBar pbHabs = new JProgressBar( 0, 5000000 ) {

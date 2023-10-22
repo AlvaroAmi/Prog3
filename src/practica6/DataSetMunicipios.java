@@ -6,14 +6,36 @@ import java.util.*;
 /** Permite gestionar datasets de municipios. Cada objeto contiene un dataset de 'n' municipios
  */
 public class DataSetMunicipios extends DatasetParaJTable {
-	
-	/** Crea un nuevo dataset de municipios, cargando los datos desde el fichero indicado
-	 * @param nombreFichero	Nombre de fichero o recurso en formato de texto. En cada línea debe incluir los datos de un municipio <br>
-	 * separados por tabulador: código nombre habitantes provincia autonomía
-	 * @throws IOException	Si hay error en la lectura del fichero
-	 */
+	public HashMap<String,ArrayList> mapa = new HashMap<>();
+
+	public Map getMapa(){
+		for (int i = 0; i < size(); i++) {
+			Municipio muni = (Municipio) get(i);
+			if (mapa.containsKey(muni.getAutonomia())) {
+				if (!mapa.get(muni.getAutonomia()).contains(muni.getProvincia())){
+				mapa.get(muni.getAutonomia()).add(muni.getProvincia());}
+			} else {
+				ArrayList<String> lista = new ArrayList<>();
+				lista.add(muni.getProvincia());
+				mapa.put(muni.getAutonomia(), lista);
+			}
+		}
+
+
+		System.out.println(mapa);
+		return mapa;
+	};
+
+
+
+
+
+
+
+
+
 	public DataSetMunicipios( String nombreFichero ) throws IOException {
-		super( new Municipio( 0, "", 0, "", "" ) );
+		super( new Municipio( 0, "", 0, 0, "", "","") );
 		File ficMunicipios = new File( nombreFichero );
 		Scanner lecturaFic = null;
 		if (ficMunicipios.exists()) {
@@ -25,16 +47,19 @@ public class DataSetMunicipios extends DatasetParaJTable {
 		while (lecturaFic.hasNextLine()) {
 			numLinea++;
 			String linea = lecturaFic.nextLine();
-			String[] partes = linea.split( "\t" );
+			String[] partes = linea.split( ",");
 			try {
 				int codigo = Integer.parseInt( partes[0] );
 				String nombre = partes[1];
 				int habitantes = Integer.parseInt( partes[2] );
-				String provincia = partes[3];
-				String comunidad = partes[4];
-				Municipio muni = new Municipio( codigo, nombre, habitantes, provincia, comunidad );
+				int superficie = Integer.parseInt(partes[3]);
+				String capital = partes[4];
+				String provincia = partes[5];
+				String comunidad = partes[6];
+				Municipio muni = new Municipio( codigo, nombre, habitantes, superficie, capital, provincia, comunidad );
 				add( muni );
 			} catch (IndexOutOfBoundsException | NumberFormatException e) {
+				e.printStackTrace();
 				System.err.println( "Error en lectura de línea " + numLinea );
 			}
 		}
@@ -83,5 +108,5 @@ public class DataSetMunicipios extends DatasetParaJTable {
 		}
 		return true;
 	}
-	
+
 }

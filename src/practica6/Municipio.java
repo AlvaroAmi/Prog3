@@ -1,26 +1,20 @@
 package practica6;
 
-/** Permite crear objetos municipio con información de población, provincia y comunidad autónoma
- */
 public class Municipio implements FilaParaJTable {  // Especializa un comportamiento de cualquier clase que podamos querer como fila en una JTable
 	private int codigo;
 	private String nombre;
 	private int habitantes;
+	private int superficie;
+	private String capital;
 	private String provincia;
 	private String autonomia;
 
-	/** Crea un municipio
-	 * @param codigo	Código único del municipio (1-n)
-	 * @param nombre	Nombre oficial
-	 * @param habitantes	Número de habitantes
-	 * @param provincia	Nombre de su provincia
-	 * @param autonomia	Nombre de su comunidad autónoma
-	 */
-	public Municipio(int codigo, String nombre, int habitantes, String provincia, String autonomia) {
-		super();
+	public Municipio(int codigo, String nombre, int habitantes, int superficie, String capital, String provincia, String autonomia) {
 		this.codigo = codigo;
 		this.nombre = nombre;
 		this.habitantes = habitantes;
+		this.superficie = superficie;
+		this.capital = capital;
 		this.provincia = provincia;
 		this.autonomia = autonomia;
 	}
@@ -49,6 +43,22 @@ public class Municipio implements FilaParaJTable {  // Especializa un comportami
 		this.habitantes = habitantes;
 	}
 
+	public int getSuperficie() {
+		return superficie;
+	}
+
+	public void setSuperficie(int superficie) {
+		this.superficie = superficie;
+	}
+
+	public String getCapital() {
+		return capital;
+	}
+
+	public void setCapital(String capital) {
+		this.capital = capital;
+	}
+
 	public String getProvincia() {
 		return provincia;
 	}
@@ -67,13 +77,20 @@ public class Municipio implements FilaParaJTable {  // Especializa un comportami
 
 	@Override
 	public String toString() {
-		return "[" + codigo + "] " + nombre + ", " + habitantes + " en " + provincia + " (" + autonomia + ")";
+		return "Municipio{" +
+				"codigo=" + codigo +
+				", nombre='" + nombre + '\'' +
+				", habitantes=" + habitantes +
+				", superficie=" + superficie +
+				", capital=" + capital +
+				", provincia='" + provincia + '\'' +
+				", autonomia='" + autonomia + '\'' +
+				'}';
 	}
-
 	// Implementación de FilaParaJTable
 
-	private static final Class<?>[] CLASES_COLS = { Integer.class, String.class, Integer.class, String.class, String.class };
-	private static final String[] CABECERAS_COLS = { "Código", "Nombre", "Habitantes", "Provincia", "Autonomía" };
+	private static final Class<?>[] CLASES_COLS = { Integer.class, String.class, Integer.class, Integer.class, String.class, String.class, String.class};
+	private static final String[] CABECERAS_COLS = { "Código", "Nombre", "Habitantes","Superficie (km2)", "Capital", "Provincia", "Autonomía" };
 	
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
@@ -100,8 +117,12 @@ public class Municipio implements FilaParaJTable {  // Especializa un comportami
 			case 2:
 				return getHabitantes();
 			case 3:
-				return getProvincia();
+				return getSuperficie();
 			case 4:
+				return getCapital();
+			case 5:
+				return getProvincia();
+			case 6:
 				return getAutonomia();
 			default:
 				throw new IndexOutOfBoundsException( "Columna incorrecta: " + columnIndex );
@@ -121,9 +142,15 @@ public class Municipio implements FilaParaJTable {  // Especializa un comportami
 				setHabitantes( (Integer) aValue );
 				break;
 			case 3:
-				setProvincia( (String) aValue );
+				setSuperficie((Integer) aValue);
 				break;
 			case 4:
+				setAutonomia((String) aValue);
+				break;
+			case 5:
+				setProvincia( (String) aValue );
+				break;
+			case 6:
 				setAutonomia( (String) aValue );
 				break;
 			default:

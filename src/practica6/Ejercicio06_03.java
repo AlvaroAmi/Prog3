@@ -15,12 +15,12 @@ public class Ejercicio06_03 {
 	private static VentanaTablaDatos ventanaDatos;
 	
 	public static void main(String[] args) {
-		ventana = new JFrame( "Ejercicio 6.3" );
+		ventana = new JFrame( "Práctica 6 --> Álvaro Amilibia" );
 		ventana.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
 		ventana.setLocationRelativeTo( null );
 		ventana.setSize( 200, 80 );
 
-		JButton bCargaMunicipios = new JButton( "Carga municipios > 200k" );
+		JButton bCargaMunicipios = new JButton( "Cargar municipios" );
 		ventana.add( bCargaMunicipios );
 		
 		bCargaMunicipios.addActionListener( new ActionListener() {
@@ -35,7 +35,7 @@ public class Ejercicio06_03 {
 	
 	private static void cargaMunicipios() {
 		try {
-			dataset = new DataSetMunicipios( "municipios200k.txt" );
+			dataset = new DataSetMunicipios( "municipios.txt" );
 			System.out.println( "Cargados municipios:" );
 			for (Municipio m : dataset.getListaMunicipios() ) {
 				System.out.println( "\t" + m );
