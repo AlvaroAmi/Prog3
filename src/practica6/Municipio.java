@@ -8,6 +8,7 @@ public class Municipio implements FilaParaJTable {  // Especializa un comportami
 	private String capital;
 	private String provincia;
 	private String autonomia;
+	private int poblacion;
 
 	public Municipio(int codigo, String nombre, int habitantes, int superficie, String capital, String provincia, String autonomia) {
 		this.codigo = codigo;
@@ -17,6 +18,16 @@ public class Municipio implements FilaParaJTable {  // Especializa un comportami
 		this.capital = capital;
 		this.provincia = provincia;
 		this.autonomia = autonomia;
+		this.poblacion = habitantes;
+
+	}
+
+	public int getPoblacion() {
+		return poblacion;
+	}
+
+	public void setPoblacion(int poblacion) {
+		this.poblacion = poblacion;
 	}
 
 	public int getCodigo() {
@@ -75,6 +86,8 @@ public class Municipio implements FilaParaJTable {  // Especializa un comportami
 		this.autonomia = autonomia;
 	}
 
+
+
 	@Override
 	public String toString() {
 		return "Municipio{" +
@@ -89,8 +102,8 @@ public class Municipio implements FilaParaJTable {  // Especializa un comportami
 	}
 	// Implementación de FilaParaJTable
 
-	private static final Class<?>[] CLASES_COLS = { Integer.class, String.class, Integer.class, Integer.class, String.class, String.class, String.class};
-	private static final String[] CABECERAS_COLS = { "Código", "Nombre", "Habitantes","Superficie (km2)", "Capital", "Provincia", "Autonomía" };
+	private static final Class<?>[] CLASES_COLS = { Integer.class, String.class, Integer.class,Integer.class, Integer.class, String.class, String.class, String.class};
+	private static final String[] CABECERAS_COLS = { "Código", "Nombre", "Población", "Habitantes","Superficie (km2)", "Capital", "Provincia", "Autonomía" };
 	
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
@@ -117,12 +130,14 @@ public class Municipio implements FilaParaJTable {  // Especializa un comportami
 			case 2:
 				return getHabitantes();
 			case 3:
-				return getSuperficie();
+				return getPoblacion();
 			case 4:
-				return getCapital();
+				return getSuperficie();
 			case 5:
-				return getProvincia();
+				return getCapital();
 			case 6:
+				return getProvincia();
+			case 7:
 				return getAutonomia();
 			default:
 				throw new IndexOutOfBoundsException( "Columna incorrecta: " + columnIndex );
@@ -140,17 +155,22 @@ public class Municipio implements FilaParaJTable {  // Especializa un comportami
 				break;
 			case 2:
 				setHabitantes( (Integer) aValue );
+				setPoblacion((Integer) aValue);
+
 				break;
 			case 3:
+				setHabitantes((Integer) aValue);
+				setPoblacion((Integer) aValue);
+			case 4:
 				setSuperficie((Integer) aValue);
 				break;
-			case 4:
+			case 5:
 				setAutonomia((String) aValue);
 				break;
-			case 5:
+			case 6:
 				setProvincia( (String) aValue );
 				break;
-			case 6:
+			case 7:
 				setAutonomia( (String) aValue );
 				break;
 			default:

@@ -8,7 +8,7 @@
 8	Elche	235580	Alicante	Comunidad Valenciana
 9	Gijón	267706	Asturias	Asturias
 10	Granada	228682	Granada	Andalucía
-11	HospitaletdeLlobregat	265444	Barcelona	Cataluña
+11	HospitaletdeLlobregat 265444	Barcelona	Cataluña
 12	JerezdelaFrontera	212730	Cádiz	Andalucía
 13	LaCoruña	244700	LaCoruña	Galicia
 14	LasPalmasdeGranCanaria	378797	LasPalmas	Canarias

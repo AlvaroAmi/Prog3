@@ -4,8 +4,11 @@ import com.sun.source.tree.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -19,16 +22,17 @@ public class VentanaTablaDatos extends JFrame {
 	private static final int COL_AUTONOMIA = 4;
 	
 	private JTable tablaDatos;
-	private DataSetMunicipios datosMunis;
+	private DataSetMunicipios datosMunis = new DataSetMunicipios( "municipios.txt" );
 	private JLabel mensaje;
 	private JTree tree;
 	private JPanel panelvisual;
 	private DefaultTreeModel modelotree;
 
 
+
 	private String autonomiaSeleccionada = "";
 	
-	public VentanaTablaDatos( JFrame ventOrigen ) {
+	public VentanaTablaDatos( JFrame ventOrigen ) throws IOException {
 		setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
 		setSize( 900, 600 );
 		setLocationRelativeTo( null );
@@ -86,8 +90,29 @@ public class VentanaTablaDatos extends JFrame {
 				}
 			}
 		});
+
+		tree.addTreeSelectionListener(new TreeSelectionListener() {
+			@Override
+			public void valueChanged(TreeSelectionEvent e) {
+				String sel = e.getPath().getLastPathComponent().toString();
+
+				for ( Municipio m: datosMunis.getListaMunicipios()){
+					if (m.getProvincia().equals(sel)){
+						tablaDatos.setModel(null);
+
+					}
+				};
+
+
+
+			}
+		});
+
+
 		
 	}
+
+
 	
 	public void setDatos( DataSetMunicipios datosMunis ) {
 
@@ -110,29 +135,18 @@ public class VentanaTablaDatos extends JFrame {
 		}
 
 
+		//this.datosMunis = datosMunis;
+		//tablaDatos.setModel( datosMunis );
 
-
-		this.datosMunis = datosMunis;
-		tablaDatos.setModel( datosMunis );
 
 		tablaDatos.setDefaultRenderer( Integer.class, new DefaultTableCellRenderer() {
-			private JProgressBar pbHabs = new JProgressBar( 0, 5000000 ) {
-				protected void paintComponent(java.awt.Graphics g) {
-					super.paintComponent(g);
-					g.setColor( Color.BLACK );
-					g.drawString( getValue()+"", 50, 10 );
-				}
+			private JProgressBar pbHabs = new JProgressBar( 0, 1000000 ) {
+
 			};
 			@Override
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 					boolean hasFocus, int row, int column) {
-				// System.out.println( "getTCR " + row + "," + column );
 				if (column==2) {
-					// Si el dato es un Object o String sería esto
-					// int valorCelda = Integer.parseInt( value.toString() );
-					// pbHabs.setValue( valorCelda );
-					// return pbHabs;
-					// Pero si el dato está asegurado ser un Integer se puede castear:
 					pbHabs.setValue( (Integer)value );
 					return pbHabs;
 				}

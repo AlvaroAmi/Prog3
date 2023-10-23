@@ -26,14 +26,6 @@ public class DataSetMunicipios extends DatasetParaJTable {
 		return mapa;
 	};
 
-
-
-
-
-
-
-
-
 	public DataSetMunicipios( String nombreFichero ) throws IOException {
 		super( new Municipio( 0, "", 0, 0, "", "","") );
 		File ficMunicipios = new File( nombreFichero );
