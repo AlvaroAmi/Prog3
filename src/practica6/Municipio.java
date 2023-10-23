@@ -1,6 +1,6 @@
 package practica6;
 
-public class Municipio implements FilaParaJTable {  // Especializa un comportamiento de cualquier clase que podamos querer como fila en una JTable
+public class Municipio implements FilaParaJTable,Comparable {  // Especializa un comportamiento de cualquier clase que podamos querer como fila en una JTable
 	private int codigo;
 	private String nombre;
 	private int habitantes;
@@ -148,7 +148,7 @@ public class Municipio implements FilaParaJTable {  // Especializa un comportami
 	public void setValueAt(Object aValue, int columnIndex) throws ClassCastException, IndexOutOfBoundsException {
 		switch (columnIndex) {
 			case 0:
-				setCodigo( (Integer) aValue );  // Se puede producir ClassCastException (igual que en el resto de casts)
+				setCodigo( (Integer) aValue );
 				break;
 			case 1:
 				setNombre( (String) aValue );
@@ -165,7 +165,7 @@ public class Municipio implements FilaParaJTable {  // Especializa un comportami
 				setSuperficie((Integer) aValue);
 				break;
 			case 5:
-				setAutonomia((String) aValue);
+				setCapital((String) aValue);
 				break;
 			case 6:
 				setProvincia( (String) aValue );
@@ -177,7 +177,11 @@ public class Municipio implements FilaParaJTable {  // Especializa un comportami
 				throw new IndexOutOfBoundsException( "Columna incorrecta: " + columnIndex );
 		}
 	}
-	
-	
+
+
+	@Override
+	public int compareTo(Object o) {
+		return this.getNombre().compareTo(((Municipio)o).getNombre());
+	}
 }
 

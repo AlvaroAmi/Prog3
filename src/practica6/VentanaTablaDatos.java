@@ -27,8 +27,8 @@ public class VentanaTablaDatos extends JFrame {
 	private JTree tree;
 	private JPanel panelvisual;
 	private DefaultTreeModel modelotree;
-
-
+	private ModeloTabla modeloTabla;
+	private int seleccion = -1;
 
 	private String autonomiaSeleccionada = "";
 	
@@ -95,25 +95,11 @@ public class VentanaTablaDatos extends JFrame {
 			@Override
 			public void valueChanged(TreeSelectionEvent e) {
 				String sel = e.getPath().getLastPathComponent().toString();
-
-				for ( Municipio m: datosMunis.getListaMunicipios()){
-					if (m.getProvincia().equals(sel)){
-						tablaDatos.setModel(null);
-
-					}
-				};
-
-
-
+				modeloTabla = new ModeloTabla(datosMunis, sel);
+				tablaDatos.setModel(modeloTabla);
 			}
 		});
-
-
-		
 	}
-
-
-	
 	public void setDatos( DataSetMunicipios datosMunis ) {
 
 		DefaultMutableTreeNode raiz = new DefaultMutableTreeNode("Municipios");
@@ -129,25 +115,23 @@ public class VentanaTablaDatos extends JFrame {
 					modelotree.insertNodeInto(provincia,autonomia,autonomia.getChildCount());
 
 				}
-
-
-
 		}
 
 
-		//this.datosMunis = datosMunis;
-		//tablaDatos.setModel( datosMunis );
-
-
 		tablaDatos.setDefaultRenderer( Integer.class, new DefaultTableCellRenderer() {
-			private JProgressBar pbHabs = new JProgressBar( 0, 1000000 ) {
+			private JProgressBar pbHabs = new JProgressBar( 0, 1000000 ) { //No utilizo 50k - 5M porque la mayoría de municipios tienen muy pocos habitantes.
 
 			};
+
 			@Override
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 					boolean hasFocus, int row, int column) {
 				if (column==2) {
 					pbHabs.setValue( (Integer)value );
+					if ((Integer)value < 1000000) {
+						float color = (float) (0.3 - (0.3 / 1000000) * ((Integer) value).floatValue());
+						pbHabs.setForeground(Color.getHSBColor(color, 1, 1));
+					}else pbHabs.setForeground(Color.getHSBColor(0.0F, 1, 1));
 					return pbHabs;
 				}
 				JLabel rendPorDefecto = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
@@ -160,19 +144,42 @@ public class VentanaTablaDatos extends JFrame {
 			@Override
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column );
-				c.setBackground( Color.WHITE );
-				if (isSelected) {
-					c.setBackground( Color.LIGHT_GRAY );
-				}
-				if (column==COL_AUTONOMIA) {
-					if (autonomiaSeleccionada.equals( (String)value )) {
-						c.setBackground( Color.CYAN );
+				JLabel lbl = (JLabel) c;
+				if (column == 1 && seleccion == -1){
+					lbl.setBackground(Color.white);
+					return lbl;
+				}if(column == 1 && seleccion != -1){
+					if(Integer.parseInt((String) value)>= seleccion){ //TODO: Que compruebe la población y no el nombre
+						lbl.setBackground(Color.red);
+						return lbl;
+					}else{
+						lbl.setBackground(Color.green);
+						return lbl;
 					}
 				}
+
 				return c;
 			}
 		} );
-		
+
+		tablaDatos.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON3){
+					Point p = e.getPoint();
+					if (tablaDatos.columnAtPoint(p) == 1){
+					seleccion = (int) tablaDatos.getValueAt(tablaDatos.rowAtPoint(p),3);
+					System.out.println(seleccion);
+					}else{
+						seleccion = -1;
+					}
+				}
+			}
+		});
+
+
+
+
 		tablaDatos.addMouseMotionListener( new MouseMotionAdapter() {
 			@Override
 			public void mouseMoved(MouseEvent e) {

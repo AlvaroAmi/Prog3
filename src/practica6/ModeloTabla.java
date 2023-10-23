@@ -1,51 +1,38 @@
 package practica6;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 public class ModeloTabla extends DatasetParaJTable{
+    protected ArrayList<Municipio> provisional;
+    protected static final int COL_CODIGO = 0;
+    protected static final int COL_PROVINCIA = 6;
+    protected static final int COL_COMUNIDAD = 7;
 
-    public ModeloTabla( String nombreFichero ) throws IOException {
+    public ModeloTabla(DataSetMunicipios datos, String provincia )  {
         super( new Municipio( 0, "", 0, 0, "", "","") );
-
-
-            try {
-
-                add( muni );
-            } catch (IndexOutOfBoundsException | NumberFormatException e) {
-                e.printStackTrace();
-
-            }
+        provisional = new ArrayList<>();
+        for (Municipio m : datos.getListaMunicipios()){
+            if (m.getProvincia().equals(provincia)){
+                provisional.add(m);}}
+        Collections.sort(provisional);
+        for (Municipio m2 : provisional){
+            add(m2);
         }
     }
 
-    /** Devuelve la lista de municipios
-     * @return	Lista de municipios
-     */
-    @SuppressWarnings("unchecked")
     public List<Municipio> getListaMunicipios() {
         return (List<Municipio>) getLista();
     }
 
-    /** Añade un municipio al final
-     * @param muni	Municipio a añadir
-     */
     public void anyadir( Municipio muni ) {
         add( muni );
     }
 
-    /** Añade un municipio en un punto dado
-     * @param muni	Municipio a añadir
-     * @param posicion	Posición relativa del municipio a añadir (de 0 a n)
-     */
     public void anyadir( Municipio muni, int posicion ) {
         anyadeFila( posicion, muni );
     }
 
-    /** Quita un municipio
-     * @param codigoMuni	Código del municipio a eliminar
-     */
+
     public void quitar( int codigoMuni ) {
         for (int i=0; i<size(); i++) {
             if (((Municipio)get(i)).getCodigo() == codigoMuni) {
@@ -55,10 +42,9 @@ public class ModeloTabla extends DatasetParaJTable{
         }
     }
 
-    // Queremos que las celdas sean editables excepto el código
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        if (columnIndex == 0) {
+        if (columnIndex == COL_CODIGO || columnIndex == COL_PROVINCIA|| columnIndex == COL_COMUNIDAD) {
             return false;
         }
         return true;
