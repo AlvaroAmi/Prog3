@@ -5,21 +5,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
+import javax.swing.tree.*;
 
 @SuppressWarnings("serial")
 public class VentanaTablaDatos extends JFrame {
 
 	private static final int COL_AUTONOMIA = 4;
+	private static final int COL_CODIGO = 0;
 	
 	private JTable tablaDatos;
 	private DataSetMunicipios datosMunis = new DataSetMunicipios( "municipios.txt" );
@@ -29,6 +28,7 @@ public class VentanaTablaDatos extends JFrame {
 	private DefaultTreeModel modelotree;
 	private ModeloTabla modeloTabla;
 	private int seleccion = -1;
+	private DefaultMutableTreeNode sel;
 
 	private String autonomiaSeleccionada = "";
 	
@@ -74,34 +74,58 @@ public class VentanaTablaDatos extends JFrame {
 		bBorrar.addActionListener( new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				int confirmar = JOptionPane.showOptionDialog(null, "¿Estás seguro?", "Confirmar", JOptionPane.YES_NO_OPTION,JOptionPane.PLAIN_MESSAGE,null,null,JOptionPane.NO_OPTION);
+				if (confirmar == 0){
 				int filaSel = tablaDatos.getSelectedRow();
 				if (filaSel >= 0) {
-					datosMunis.borraFila( filaSel );
+					int codigo = (int) tablaDatos.getModel().getValueAt(filaSel, COL_CODIGO);
+					datosMunis.getListaMunicipios().remove(getIndex(codigo));
+					setMap(datosMunis);
+					modeloTabla = new ModeloTabla(datosMunis, sel.toString());
+					tablaDatos.setModel(modeloTabla);}
 				}
 			}
 		});
+
+
 		
 		bAnyadir.addActionListener( new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int filaSel = tablaDatos.getSelectedRow();
-				if (filaSel>=0) {
-					datosMunis.anyadeFila( filaSel, new Municipio( datosMunis.getListaMunicipios().size()+1, "Nombre", 0, 0, "","","" ) );
-				}
-			}
-		});
+				if (sel.getParent().toString() != "Municipios"){
+				try{
+					datosMunis.anyadir(new Municipio(datosMunis.getListaMunicipios().get(datosMunis.getLista().size()-1).getCodigo()+1,"",50000,0,"",sel.toString(),sel.getParent().toString()));
+					setMap(datosMunis);
+					modeloTabla = new ModeloTabla(datosMunis, sel.toString());
+					tablaDatos.setModel(modeloTabla);}catch(Exception ex) {
+					JOptionPane.showMessageDialog(null, "Debes seleccionar una autonomía", "Error", JOptionPane.ERROR_MESSAGE);
+				}}
+
+			}}
+		);
 
 		tree.addTreeSelectionListener(new TreeSelectionListener() {
 			@Override
 			public void valueChanged(TreeSelectionEvent e) {
-				String sel = e.getPath().getLastPathComponent().toString();
-				modeloTabla = new ModeloTabla(datosMunis, sel);
+
+				sel = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
+				modeloTabla = new ModeloTabla(datosMunis, sel.toString());
 				tablaDatos.setModel(modeloTabla);
 			}
 		});
 	}
-	public void setDatos( DataSetMunicipios datosMunis ) {
 
+	public int getIndex(int codigo){
+		int i = 0;
+		for (Municipio mun:datosMunis.getListaMunicipios()){
+			if (mun.getCodigo()==codigo){
+				return i;
+			}
+			i++;
+		}
+        return 0;
+    }
+	public void setMap(DataSetMunicipios datosMunis){
 		DefaultMutableTreeNode raiz = new DefaultMutableTreeNode("Municipios");
 		modelotree = new DefaultTreeModel(raiz);
 		tree.setModel(modelotree);
@@ -110,14 +134,23 @@ public class VentanaTablaDatos extends JFrame {
 		for (int i = 0; i<mapa.keySet().size();i++){
 			DefaultMutableTreeNode autonomia = new DefaultMutableTreeNode(mapa.keySet().toArray()[i]);
 			modelotree.insertNodeInto(autonomia,raiz,i);
-				for (Object o : (ArrayList) mapa.get(mapa.keySet().toArray()[i])) {
-					DefaultMutableTreeNode provincia = new DefaultMutableTreeNode(o);
-					modelotree.insertNodeInto(provincia,autonomia,autonomia.getChildCount());
+			for (Object o : (ArrayList) mapa.get(mapa.keySet().toArray()[i])) {
+				DefaultMutableTreeNode provincia = new DefaultMutableTreeNode(o);
+				modelotree.insertNodeInto(provincia,autonomia,autonomia.getChildCount());
 
-				}
+			}
 		}
+		TreePath pathToExpand = new TreePath(raiz.getPath());
+		tree.expandPath(pathToExpand);
+		for (int i = 0; i < raiz.getChildCount(); i++) {
+			TreePath childPath = pathToExpand.pathByAddingChild(raiz.getChildAt(i));
+			tree.expandPath(childPath);
+		}
+	}
 
 
+	public void setDatos( DataSetMunicipios datosMunis ) {
+		setMap(datosMunis);
 		tablaDatos.setDefaultRenderer( Integer.class, new DefaultTableCellRenderer() {
 			private JProgressBar pbHabs = new JProgressBar( 0, 1000000 ) { //No utilizo 50k - 5M porque la mayoría de municipios tienen muy pocos habitantes.
 
@@ -150,7 +183,7 @@ public class VentanaTablaDatos extends JFrame {
 					return lbl;
 				}if(column == 1 && seleccion != -1){
 					int val = (int) tablaDatos.getValueAt(row,3);
-					if(val>= seleccion){ //TODO: Que compruebe la población y no el nombre
+					if(val>= seleccion){
 						lbl.setBackground(Color.red);
 						return lbl;
 					}else{
@@ -224,7 +257,8 @@ public class VentanaTablaDatos extends JFrame {
 				return spinner;
 			}
 			@Override
-			public Object getCellEditorValue() { // Valor que se retorna al acabar la edición
+			public Object getCellEditorValue() {
+				seleccion = -1;
 				if (lanzadoSpinner) {
 					return spinner.getValue();
 				} else {

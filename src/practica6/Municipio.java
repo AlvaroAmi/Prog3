@@ -179,9 +179,16 @@ public class Municipio implements FilaParaJTable,Comparable {  // Especializa un
 	}
 
 
-	@Override
 	public int compareTo(Object o) {
-		return this.getNombre().compareTo(((Municipio)o).getNombre());
-	}
-}
+		String nombre1 = this.getNombre();
+		String nombre2 = ((Municipio) o).getNombre();
+
+		if (nombre1.isEmpty() && !nombre2.isEmpty()) {
+			return 1;
+		} else if (!nombre1.isEmpty() && nombre2.isEmpty()) {
+			return -1;
+		} else {
+			return nombre1.compareTo(nombre2);
+		}
+	}}
 
