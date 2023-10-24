@@ -156,11 +156,11 @@ public class Municipio implements FilaParaJTable,Comparable {  // Especializa un
 			case 2:
 				setHabitantes( (Integer) aValue );
 				setPoblacion((Integer) aValue);
-
 				break;
 			case 3:
 				setHabitantes((Integer) aValue);
 				setPoblacion((Integer) aValue);
+				break;
 			case 4:
 				setSuperficie((Integer) aValue);
 				break;

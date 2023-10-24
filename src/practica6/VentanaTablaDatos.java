@@ -145,11 +145,12 @@ public class VentanaTablaDatos extends JFrame {
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column );
 				JLabel lbl = (JLabel) c;
-				if (column == 1 && seleccion == -1){
+				if ((column == 1 && seleccion == -1)||(column != 1)){
 					lbl.setBackground(Color.white);
 					return lbl;
 				}if(column == 1 && seleccion != -1){
-					if(Integer.parseInt((String) value)>= seleccion){ //TODO: Que compruebe la población y no el nombre
+					int val = (int) tablaDatos.getValueAt(row,3);
+					if(val>= seleccion){ //TODO: Que compruebe la población y no el nombre
 						lbl.setBackground(Color.red);
 						return lbl;
 					}else{
@@ -209,7 +210,7 @@ public class VentanaTablaDatos extends JFrame {
 		});
 
 		tablaDatos.setDefaultEditor( Integer.class, new DefaultCellEditor( new JTextField() ) {
-			SpinnerNumberModel mSpinner = new SpinnerNumberModel( 200000, 200000, 5000000, 1000 );
+			SpinnerNumberModel mSpinner = new SpinnerNumberModel( 200000, 0, 5000000, 1000 );
 			JSpinner spinner = new JSpinner( mSpinner );
 			boolean lanzadoSpinner;
 			@Override
