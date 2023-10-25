@@ -7,6 +7,7 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -31,6 +32,7 @@ public class VentanaTablaDatos extends JFrame {
 	private DefaultMutableTreeNode sel;
 	private int orden = 1; //1 -> Alfabeticamente 2-> Habitantes
 	private String autonomiaSeleccionada = "";
+
 
 	public VentanaTablaDatos(JFrame ventOrigen ) throws IOException {
 		setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
@@ -137,18 +139,38 @@ public class VentanaTablaDatos extends JFrame {
 		}
         return 0;
     }
-	public void setMap(DataSetMunicipios datosMunis){
+
+	public int gpoblacion(String value,boolean leaf){
+		int suma = 0;
+		if(datosMunis != null){
+		if (value.equals("Municipios")){
+			for (Municipio m: datosMunis.getListaMunicipios()){
+				suma += m.getHabitantes();
+			}
+
+		} else if (!leaf){
+		for (Municipio m: datosMunis.getListaMunicipios()){
+			if (m.getAutonomia().equals(value.toString())){
+				suma += m.getHabitantes();
+			}
+		}}
+		}
+
+        return suma;
+    }
+
+    public void setMap(DataSetMunicipios datosMunis) {
 		DefaultMutableTreeNode raiz = new DefaultMutableTreeNode("Municipios");
 		modelotree = new DefaultTreeModel(raiz);
 		tree.setModel(modelotree);
 
 		HashMap mapa = (HashMap) datosMunis.getMapa();
-		for (int i = 0; i<mapa.keySet().size();i++){
+		for (int i = 0; i < mapa.keySet().size(); i++) {
 			DefaultMutableTreeNode autonomia = new DefaultMutableTreeNode(mapa.keySet().toArray()[i]);
-			modelotree.insertNodeInto(autonomia,raiz,i);
+			modelotree.insertNodeInto(autonomia, raiz, i);
 			for (Object o : (ArrayList) mapa.get(mapa.keySet().toArray()[i])) {
 				DefaultMutableTreeNode provincia = new DefaultMutableTreeNode(o);
-				modelotree.insertNodeInto(provincia,autonomia,autonomia.getChildCount());
+				modelotree.insertNodeInto(provincia, autonomia, autonomia.getChildCount());
 
 			}
 		}
@@ -158,10 +180,33 @@ public class VentanaTablaDatos extends JFrame {
 			TreePath childPath = pathToExpand.pathByAddingChild(raiz.getChildAt(i));
 			tree.expandPath(childPath);
 		}
-	}
 
-	public void setDatos( DataSetMunicipios datosMunis ) {
+
+	}
+		public void setDatos( DataSetMunicipios datosMunis) {
 		setMap(datosMunis);
+
+			tree.setCellRenderer(new DefaultTreeCellRenderer() {
+				@Override
+				public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+                    JLabel defaul = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+                    JPanel panel = new JPanel();
+                    if (value.toString().equals("Municipios")) {
+                        return defaul;
+                    } else if (!leaf && !value.toString().equals("Municipios")) {
+                        System.out.println(value.toString());
+                        int valor = gpoblacion(value.toString(), leaf);
+                        JProgressBar barra = new JProgressBar(0, gpoblacion("Municipios", leaf));
+                        barra.setValue(valor);
+                        panel.add(defaul);
+                        panel.add(barra);
+                        System.out.println(gpoblacion("Municipios", leaf));
+                        return panel;
+                    }
+                    return defaul;
+                }
+			});
+
 		tablaDatos.setDefaultRenderer( Integer.class, new DefaultTableCellRenderer() {
 			private JProgressBar pbHabs = new JProgressBar( 0, 1000000 ) { //No utilizo 50k - 5M porque la mayoría de municipios tienen muy pocos habitantes (para que se vea mejor la barra)
 			};
@@ -274,6 +319,6 @@ public class VentanaTablaDatos extends JFrame {
 			}
 		});
 		
-	}
+
 	
-}
+}}

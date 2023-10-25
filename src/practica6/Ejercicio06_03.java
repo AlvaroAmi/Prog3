@@ -36,10 +36,6 @@ public class Ejercicio06_03 {
 	private static void cargaMunicipios() {
 		try {
 			dataset = new DataSetMunicipios( "municipios.txt" );
-			System.out.println( "Cargados municipios:" );
-			for (Municipio m : dataset.getListaMunicipios() ) {
-				System.out.println( "\t" + m );
-			}
 			ventanaDatos = new VentanaTablaDatos( ventana );
 			ventanaDatos.setDatos( dataset );
 			ventanaDatos.setVisible( true );
