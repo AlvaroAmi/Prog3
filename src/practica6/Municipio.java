@@ -86,8 +86,6 @@ public class Municipio implements FilaParaJTable,Comparable {  // Especializa un
 		this.autonomia = autonomia;
 	}
 
-
-
 	@Override
 	public String toString() {
 		return "Municipio{" +
@@ -180,15 +178,13 @@ public class Municipio implements FilaParaJTable,Comparable {  // Especializa un
 
 
 	public int compareTo(Object o) {
-		String nombre1 = this.getNombre();
-		String nombre2 = ((Municipio) o).getNombre();
 
-		if (nombre1.isEmpty() && !nombre2.isEmpty()) {
-			return 1;
-		} else if (!nombre1.isEmpty() && nombre2.isEmpty()) {
-			return -1;
-		} else {
-			return nombre1.compareTo(nombre2);
-		}
-	}}
+		return 0;
+	}
+
+
+
+
+
+}
 

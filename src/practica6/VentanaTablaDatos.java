@@ -29,10 +29,10 @@ public class VentanaTablaDatos extends JFrame {
 	private ModeloTabla modeloTabla;
 	private int seleccion = -1;
 	private DefaultMutableTreeNode sel;
-
+	private int orden = 1; //1 -> Alfabeticamente 2-> Habitantes
 	private String autonomiaSeleccionada = "";
-	
-	public VentanaTablaDatos( JFrame ventOrigen ) throws IOException {
+
+	public VentanaTablaDatos(JFrame ventOrigen ) throws IOException {
 		setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
 		setSize( 900, 600 );
 		setLocationRelativeTo( null );
@@ -49,7 +49,6 @@ public class VentanaTablaDatos extends JFrame {
 
 		panelvisual = new JPanel();
 		this.add(panelvisual,BorderLayout.EAST);
-
 
 		JPanel pInferior = new JPanel();
 		JButton bAnyadir = new JButton( "Añadir" );
@@ -70,6 +69,21 @@ public class VentanaTablaDatos extends JFrame {
 				ventOrigen.setVisible( true );
 			}
 		});
+
+		bOrden.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+			if (orden == 1){
+				orden = 2;
+			}else{
+				orden = 1;
+			}
+				setMap(datosMunis);
+				modeloTabla = new ModeloTabla(datosMunis, sel.toString(),orden);
+				tablaDatos.setModel(modeloTabla);
+
+			}
+		});
 	
 		bBorrar.addActionListener( new ActionListener() {
 			@Override
@@ -81,14 +95,12 @@ public class VentanaTablaDatos extends JFrame {
 					int codigo = (int) tablaDatos.getModel().getValueAt(filaSel, COL_CODIGO);
 					datosMunis.getListaMunicipios().remove(getIndex(codigo));
 					setMap(datosMunis);
-					modeloTabla = new ModeloTabla(datosMunis, sel.toString());
+					modeloTabla = new ModeloTabla(datosMunis, sel.toString(),orden);
 					tablaDatos.setModel(modeloTabla);}
 				}
 			}
 		});
 
-
-		
 		bAnyadir.addActionListener( new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -96,7 +108,7 @@ public class VentanaTablaDatos extends JFrame {
 				try{
 					datosMunis.anyadir(new Municipio(datosMunis.getListaMunicipios().get(datosMunis.getLista().size()-1).getCodigo()+1,"",50000,0,"",sel.toString(),sel.getParent().toString()));
 					setMap(datosMunis);
-					modeloTabla = new ModeloTabla(datosMunis, sel.toString());
+					modeloTabla = new ModeloTabla(datosMunis, sel.toString(),orden);
 					tablaDatos.setModel(modeloTabla);}catch(Exception ex) {
 					JOptionPane.showMessageDialog(null, "Debes seleccionar una autonomía", "Error", JOptionPane.ERROR_MESSAGE);
 				}}
@@ -109,7 +121,7 @@ public class VentanaTablaDatos extends JFrame {
 			public void valueChanged(TreeSelectionEvent e) {
 
 				sel = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
-				modeloTabla = new ModeloTabla(datosMunis, sel.toString());
+				modeloTabla = new ModeloTabla(datosMunis, sel.toString(),orden);
 				tablaDatos.setModel(modeloTabla);
 			}
 		});
@@ -148,12 +160,10 @@ public class VentanaTablaDatos extends JFrame {
 		}
 	}
 
-
 	public void setDatos( DataSetMunicipios datosMunis ) {
 		setMap(datosMunis);
 		tablaDatos.setDefaultRenderer( Integer.class, new DefaultTableCellRenderer() {
-			private JProgressBar pbHabs = new JProgressBar( 0, 1000000 ) { //No utilizo 50k - 5M porque la mayoría de municipios tienen muy pocos habitantes.
-
+			private JProgressBar pbHabs = new JProgressBar( 0, 1000000 ) { //No utilizo 50k - 5M porque la mayoría de municipios tienen muy pocos habitantes (para que se vea mejor la barra)
 			};
 
 			@Override
@@ -210,9 +220,6 @@ public class VentanaTablaDatos extends JFrame {
 				}
 			}
 		});
-
-
-
 
 		tablaDatos.addMouseMotionListener( new MouseMotionAdapter() {
 			@Override

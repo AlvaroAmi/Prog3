@@ -7,14 +7,42 @@ public class ModeloTabla extends DatasetParaJTable{
     protected static final int COL_CODIGO = 0;
     protected static final int COL_PROVINCIA = 6;
     protected static final int COL_COMUNIDAD = 7;
+    protected int orden;
 
-    public ModeloTabla(DataSetMunicipios datos, String provincia )  {
+    Comparator comp = new Comparator() {
+        public int compare(Object mun1, Object mun2) {
+            if (orden == 1){
+            String nombre1 = ((Municipio)mun1).getNombre();
+            String nombre2 = ((Municipio)mun2).getNombre();
+
+            if (nombre1.isEmpty() && !nombre2.isEmpty()) {
+                return 1;
+            } else if (!nombre1.isEmpty() && nombre2.isEmpty()) {
+                return -1;
+            } else {
+                return nombre1.compareTo(nombre2);
+            }
+        }else{
+                int hab1 = ((Municipio)mun1).getHabitantes();
+                int hab2 = ((Municipio)mun2).getHabitantes();
+                if (hab1>hab2){
+                    return -1;
+                }else{
+                    return 1;
+                }
+            }
+
+        }
+    };
+
+    public ModeloTabla(DataSetMunicipios datos, String provincia, int orden)  {
         super( new Municipio( 0, "", 0, 0, "", "","") );
+        this.orden = orden;
         provisional = new ArrayList<>();
         for (Municipio m : datos.getListaMunicipios()){
             if (m.getProvincia().equals(provincia)){
                 provisional.add(m);}}
-        Collections.sort(provisional);
+        Collections.sort(provisional,comp);
         for (Municipio m2 : provisional){
             add(m2);
         }
@@ -31,7 +59,6 @@ public class ModeloTabla extends DatasetParaJTable{
     public void anyadir( Municipio muni, int posicion ) {
         anyadeFila( posicion, muni );
     }
-
 
     public void quitar( int codigoMuni ) {
         for (int i=0; i<size(); i++) {

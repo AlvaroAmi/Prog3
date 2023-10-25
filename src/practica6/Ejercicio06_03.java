@@ -40,7 +40,6 @@ public class Ejercicio06_03 {
 			for (Municipio m : dataset.getListaMunicipios() ) {
 				System.out.println( "\t" + m );
 			}
-			// TODO Resolver el ejercicio 6.3
 			ventanaDatos = new VentanaTablaDatos( ventana );
 			ventanaDatos.setDatos( dataset );
 			ventanaDatos.setVisible( true );

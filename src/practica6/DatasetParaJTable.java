@@ -7,9 +7,6 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
-/** Clase para cualquier set de datos basado en ArrayList que quiera visualizarse en una JTable con el modelo ModeloJTable
- * @author andoni.eguiluz @ ingenieria.deusto.es
- */
 public class DatasetParaJTable implements TableModel {
 
 	// Atributo de datos (genérico para cualquier clase que implemente FilaParaJTable)
