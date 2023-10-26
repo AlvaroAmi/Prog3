@@ -194,13 +194,11 @@ public class VentanaTablaDatos extends JFrame {
                     if (value.toString().equals("Municipios")) {
                         return defaul;
                     } else if (!leaf && !value.toString().equals("Municipios")) {
-                        System.out.println(value.toString());
                         int valor = gpoblacion(value.toString(), leaf);
                         JProgressBar barra = new JProgressBar(0, gpoblacion("Municipios", leaf));
                         barra.setValue(valor);
                         panel.add(defaul);
                         panel.add(barra);
-                        System.out.println(gpoblacion("Municipios", leaf));
                         return panel;
                     }
                     return defaul;
