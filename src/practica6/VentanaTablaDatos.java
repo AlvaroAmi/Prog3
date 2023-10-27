@@ -60,7 +60,7 @@ public class VentanaTablaDatos extends JFrame {
 		pInferior.add( bBorrar );
 		pInferior.add(bOrden);
 		add( pInferior, BorderLayout.SOUTH );
-		
+
 		this.addWindowListener( new WindowAdapter() {
 			@Override
 			public void windowOpened(WindowEvent e) {
@@ -186,6 +186,13 @@ public class VentanaTablaDatos extends JFrame {
 		public void setDatos( DataSetMunicipios datosMunis) {
 		setMap(datosMunis);
 
+		/*
+		 He considerado que lo que más sentido tiene es que la progressbar tenga como valor máximo el número
+		 total de habitantes de todas las provincias y que cada comunidad muestre la suma de sus provincias, ya que el enunciado
+		 no termina de dejar claro cual sería el valor máximo de la barra al asignarla a una provincia.8
+		 */
+
+
 			tree.setCellRenderer(new DefaultTreeCellRenderer() {
 				@Override
 				public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
@@ -200,6 +207,7 @@ public class VentanaTablaDatos extends JFrame {
                         panel.add(defaul);
                         panel.add(barra);
                         return panel;
+
                     }
                     return defaul;
                 }

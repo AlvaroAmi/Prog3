@@ -48,27 +48,6 @@ public class ModeloTabla extends DatasetParaJTable{
         }
     }
 
-    public List<Municipio> getListaMunicipios() {
-        return (List<Municipio>) getLista();
-    }
-
-    public void anyadir( Municipio muni ) {
-        add( muni );
-    }
-
-    public void anyadir( Municipio muni, int posicion ) {
-        anyadeFila( posicion, muni );
-    }
-
-    public void quitar( int codigoMuni ) {
-        for (int i=0; i<size(); i++) {
-            if (((Municipio)get(i)).getCodigo() == codigoMuni) {
-                borraFila( i );
-                return;
-            }
-        }
-    }
-
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         if (columnIndex == COL_CODIGO || columnIndex == COL_PROVINCIA|| columnIndex == COL_COMUNIDAD) {
