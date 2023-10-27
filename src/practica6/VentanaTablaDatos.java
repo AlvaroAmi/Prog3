@@ -1,18 +1,14 @@
 package practica6;
 
-import com.sun.source.tree.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
 import javax.swing.tree.*;
 
 @SuppressWarnings("serial")
