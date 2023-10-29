@@ -176,8 +176,6 @@ public class VentanaTablaDatos extends JFrame {
 			TreePath childPath = pathToExpand.pathByAddingChild(raiz.getChildAt(i));
 			tree.expandPath(childPath);
 		}
-
-
 	}
 		public void setDatos( DataSetMunicipios datosMunis) {
 		setMap(datosMunis);
@@ -235,10 +233,10 @@ public class VentanaTablaDatos extends JFrame {
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column );
 				JLabel lbl = (JLabel) c;
-				if ((column == 1 && seleccion == -1)||(column != 1)){
+				if (column != 1 || seleccion == -1){
 					lbl.setBackground(Color.white);
 					return lbl;
-				}if(column == 1 && seleccion != -1){
+				}if(seleccion != -1){
 					int val = (int) tablaDatos.getValueAt(row,3);
 					if(val>= seleccion){
 						lbl.setBackground(Color.red);
@@ -248,7 +246,6 @@ public class VentanaTablaDatos extends JFrame {
 						return lbl;
 					}
 				}
-
 				return c;
 			}
 		} );
@@ -268,19 +265,7 @@ public class VentanaTablaDatos extends JFrame {
 			}
 		});
 
-		tablaDatos.addMouseMotionListener( new MouseMotionAdapter() {
-			@Override
-			public void mouseMoved(MouseEvent e) {
-				int filaEnTabla = tablaDatos.rowAtPoint( e.getPoint() );
-				int colEnTabla = tablaDatos.columnAtPoint( e.getPoint() );
-				if (colEnTabla == 2) {
-					int numHabs = datosMunis.getListaMunicipios().get(filaEnTabla).getHabitantes();
-					tablaDatos.setToolTipText( String.format( "Población: %,d", numHabs ) );
-				} else {
-					tablaDatos.setToolTipText( null );  // Desactiva
-				}
-			}
-		});
+
 
 		tablaDatos.addMouseListener( new MouseAdapter() {
 			@Override
