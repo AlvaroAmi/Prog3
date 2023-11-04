@@ -3,7 +3,7 @@ package practica0506;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class UsuarioTwitter {
+public class UsuarioTwitter implements Comparable{
     protected String id;
     protected String screenName;
     protected ArrayList<String> tags;
@@ -14,6 +14,7 @@ public class UsuarioTwitter {
     protected Long lastSeen;
     protected String tweetId;
     protected ArrayList<String> friends;
+    protected int amigosDentro;
 
     public UsuarioTwitter(String id, String screenName, ArrayList<String> tags, URL avatar, Long followersCount,
                           Long friendsCount, String lang, Long lastSeen, String tweetId, ArrayList<String> friends) {
@@ -27,6 +28,15 @@ public class UsuarioTwitter {
         this.lastSeen = lastSeen;
         this.tweetId = tweetId;
         this.friends = friends;
+        this.amigosDentro = 0;
+    }
+
+    public int getAmigosDentro() {
+        return amigosDentro;
+    }
+
+    public void setAmigosDentro(int amigosDentro) {
+        this.amigosDentro = amigosDentro;
     }
 
     public String getId() {
@@ -108,4 +118,16 @@ public class UsuarioTwitter {
     public void setFriends(ArrayList<String> friends) {
         this.friends = friends;
     }
+
+    @Override
+    public String toString() {
+        return (screenName+" - "+amigosDentro+" amigos.");
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        UsuarioTwitter d = (UsuarioTwitter) o;
+        return d.amigosDentro-this.amigosDentro;
+    }
 }
+

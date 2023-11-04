@@ -1,8 +1,10 @@
 package practica0506;
 
+import javax.swing.*;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /** Clase para proceso básico de ficheros csv
  * @author andoni.eguiluz @ ingenieria.deusto.es
@@ -10,6 +12,9 @@ import java.util.ArrayList;
 public class CSV { 
 	
 	private static boolean LOG_CONSOLE_CSV = false;  // Log a consola de lo que se va leyendo en el CSV
+	protected static HashMap<String,UsuarioTwitter> mapa = new HashMap<>();
+	protected static ArrayList<UsuarioTwitter> listaUsuarios = new ArrayList<>();
+	protected static int progreso;
 
 	/** Procesa un fichero csv
 	 * @param file	Fichero del csv
@@ -20,7 +25,19 @@ public class CSV {
 	{
 		processCSV( file.toURI().toURL() );
 	}
-	
+
+	public static int getProgreso() {
+		return progreso;
+	}
+
+	public static HashMap<String, UsuarioTwitter> getMapa() {
+		return mapa;
+	}
+
+	public static ArrayList<UsuarioTwitter> getListaUsuarios() {
+		return listaUsuarios;
+	}
+
 	/** Procesa un fichero csv
 	 * @param urlCompleta	URL del csv
 	 * @throws IOException
@@ -28,7 +45,7 @@ public class CSV {
 	 * @throws FileNotFoundException
 	 * @throws ConnectException
 	 */
-	public static void processCSV( URL url ) 
+	public static void processCSV( URL url )
 	throws MalformedURLException,  // URL incorrecta 
 	 IOException, // Error al abrir conexión
 	 UnknownHostException, // servidor web no existente
@@ -203,11 +220,30 @@ public class CSV {
 		System.err.println( cabs );  // Saca la cabecera por consola de error
 	}
 
-	private static int numLin = 0;
-	private static void procesaLineaDatos( ArrayList<Object> datos ) {
+
+	private static void procesaLineaDatos(ArrayList<Object> datos) throws MalformedURLException {
 		// TODO Cambiar este proceso si se quiere hacer algo con las cabeceras
-		numLin++;
-		System.out.println( numLin + "\t" + datos );  // Saca la cabecera por consola de error
+		progreso++;
+		String id = (String) datos.get(0);
+		String screenName = (String) datos.get(1);
+		ArrayList<String> tags = (ArrayList<String>) datos.get(2);
+		URL avatar = new URL((String) datos.get(3));
+		Long followersCount = (Long) datos.get(4);
+		Long friendsCount = (Long) datos.get(5);
+		String lang = (String) datos.get(6);
+		Long lastSeen = (Long) datos.get(7);
+		String tweetId = (String) datos.get(8);
+		ArrayList<String> friends = (ArrayList<String>) datos.get(9);
+
+		UsuarioTwitter usuario = new UsuarioTwitter(id, screenName, tags, avatar, followersCount, friendsCount, lang, lastSeen, tweetId, friends);
+		if(mapa.containsKey(id)){ //COMPRUEBA QUE EL USUARIO NO ESTÉ REPETIDO
+			System.out.println(usuario + "repetido");
+		}
+		mapa.put(id,usuario);
+		listaUsuarios.add(usuario);
+
+
 	}
+
 
 }
