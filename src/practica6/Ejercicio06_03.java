@@ -11,7 +11,6 @@ public class Ejercicio06_03 {
 	
 	private static JFrame ventana;
 	private static DataSetMunicipios dataset;
-
 	private static VentanaTablaDatos ventanaDatos;
 	
 	public static void main(String[] args) {
@@ -29,7 +28,6 @@ public class Ejercicio06_03 {
 				cargaMunicipios();
 			}
 		});
-		
 		ventana.setVisible( true );
 	}
 	
@@ -43,5 +41,4 @@ public class Ejercicio06_03 {
 			System.err.println( "Error en carga de municipios" );
 		}
 	}
-	
 }

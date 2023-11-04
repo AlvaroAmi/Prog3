@@ -56,7 +56,7 @@ public class VentanaTablaDatos extends JFrame {
 		pInferior.add( bBorrar );
 		pInferior.add(bOrden);
 		add( pInferior, BorderLayout.SOUTH );
-		
+
 		this.addWindowListener( new WindowAdapter() {
 			@Override
 			public void windowOpened(WindowEvent e) {
@@ -176,11 +176,16 @@ public class VentanaTablaDatos extends JFrame {
 			TreePath childPath = pathToExpand.pathByAddingChild(raiz.getChildAt(i));
 			tree.expandPath(childPath);
 		}
-
-
 	}
 		public void setDatos( DataSetMunicipios datosMunis) {
 		setMap(datosMunis);
+
+		/*
+		 He considerado que lo que más sentido tiene es que la progressbar tenga como valor máximo el número
+		 total de habitantes de todas las provincias y que cada comunidad muestre la suma de sus provincias, ya que el enunciado
+		 no termina de dejar claro cual sería el valor máximo de la barra al asignarla a una provincia.8
+		 */
+
 
 			tree.setCellRenderer(new DefaultTreeCellRenderer() {
 				@Override
@@ -196,6 +201,7 @@ public class VentanaTablaDatos extends JFrame {
                         panel.add(defaul);
                         panel.add(barra);
                         return panel;
+
                     }
                     return defaul;
                 }
@@ -227,10 +233,10 @@ public class VentanaTablaDatos extends JFrame {
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column );
 				JLabel lbl = (JLabel) c;
-				if ((column == 1 && seleccion == -1)||(column != 1)){
+				if (column != 1 || seleccion == -1){
 					lbl.setBackground(Color.white);
 					return lbl;
-				}if(column == 1 && seleccion != -1){
+				}if(seleccion != -1){
 					int val = (int) tablaDatos.getValueAt(row,3);
 					if(val>= seleccion){
 						lbl.setBackground(Color.red);
@@ -240,7 +246,6 @@ public class VentanaTablaDatos extends JFrame {
 						return lbl;
 					}
 				}
-
 				return c;
 			}
 		} );
@@ -260,19 +265,7 @@ public class VentanaTablaDatos extends JFrame {
 			}
 		});
 
-		tablaDatos.addMouseMotionListener( new MouseMotionAdapter() {
-			@Override
-			public void mouseMoved(MouseEvent e) {
-				int filaEnTabla = tablaDatos.rowAtPoint( e.getPoint() );
-				int colEnTabla = tablaDatos.columnAtPoint( e.getPoint() );
-				if (colEnTabla == 2) {
-					int numHabs = datosMunis.getListaMunicipios().get(filaEnTabla).getHabitantes();
-					tablaDatos.setToolTipText( String.format( "Población: %,d", numHabs ) );
-				} else {
-					tablaDatos.setToolTipText( null );  // Desactiva
-				}
-			}
-		});
+
 
 		tablaDatos.addMouseListener( new MouseAdapter() {
 			@Override

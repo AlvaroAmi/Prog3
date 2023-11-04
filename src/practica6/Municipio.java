@@ -1,6 +1,6 @@
 package practica6;
 
-public class Municipio implements FilaParaJTable,Comparable {  // Especializa un comportamiento de cualquier clase que podamos querer como fila en una JTable
+public class Municipio implements FilaParaJTable,Comparable {
 	private int codigo;
 	private String nombre;
 	private int habitantes;
@@ -176,15 +176,9 @@ public class Municipio implements FilaParaJTable,Comparable {  // Especializa un
 		}
 	}
 
-
 	public int compareTo(Object o) {
-
 		return 0;
 	}
-
-
-
-
 
 }
 
