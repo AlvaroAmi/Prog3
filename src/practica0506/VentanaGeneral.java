@@ -2,10 +2,11 @@ package practica0506;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -24,9 +25,11 @@ public class VentanaGeneral extends JFrame {
     protected static CSV c = new CSV();
     protected static TreeSet<UsuarioTwitter> setAmigos = new TreeSet<>();
 
+    protected static DefaultTableModel modeloTabla = new DefaultTableModel();
+    protected static JTable table = new JTable(modeloTabla);
     static JTextArea textArea = new JTextArea();
-
-
+    static JTextField textField = new JTextField("Escribe aquí para buscar la etiqueta (enter para buscar)");
+    String etq = "";
 
     protected static void genMapaNick(){
         ArrayList<UsuarioTwitter> usuarios = c.getListaUsuarios();
@@ -55,7 +58,25 @@ public class VentanaGeneral extends JFrame {
                 MapaNick.get(clave).setAmigosDentro(dentro);
                 setAmigos.add(MapaNick.get(clave));
                 textArea.append("Usuario: "+clave+" tiene "+fuera+" fuera de nuestro sistema y "+dentro+" dentro"+ "\n");
-
+                if(dentro > 10){
+                    String id = MapaNick.get(clave).getId();
+                    String screenName = MapaNick.get(clave).getScreenName();
+                    Long followersCount = MapaNick.get(clave).getFollowersCount();
+                    Long friendsCount = MapaNick.get(clave).getFriendsCount();
+                    String lang = MapaNick.get(clave).getLang();
+                    Long lastSeen = MapaNick.get(clave).getLastSeen();
+                    if(table.getRowCount()!=0){
+                        modeloTabla.insertRow(table.getRowCount(), (new String[]{""}));
+                    }else{
+                        modeloTabla.insertRow(0, (new String[]{""}));
+                    }
+                        table.setValueAt(id,table.getRowCount()-1,0);
+                        table.setValueAt(screenName,table.getRowCount()-1,1);
+                        table.setValueAt(followersCount,table.getRowCount()-1,2);
+                        table.setValueAt(friendsCount,table.getRowCount()-1,3);
+                        table.setValueAt(lang,table.getRowCount()-1,4);
+                        table.setValueAt(lastSeen,table.getRowCount()-1,5);
+                }
             }
 
         }
@@ -97,8 +118,7 @@ public class VentanaGeneral extends JFrame {
 
     protected long contarLineas(String archivo) {
         try {
-            long contadorLineas = Files.lines(Path.of(archivo)).count();
-            return contadorLineas;
+            return Files.lines(Path.of(archivo)).count();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -107,21 +127,45 @@ public class VentanaGeneral extends JFrame {
 
     VentanaGeneral(){
         this.setTitle("Gestión Twitter - Álvaro Amilibia Gascón");
-        this.setSize(900,700);
+        this.setSize(1700,1000);
         this.setLocationRelativeTo(null);
 
         this.setLayout(new BorderLayout());
         String archivo = gestionarFichero();
 
+        textArea.setEditable(false);
         JScrollPane textScrollPane = new JScrollPane(textArea);
         this.add(textScrollPane, BorderLayout.WEST);
 
 
-        String[] columnas = {"Columna 1", "Columna 2"};
-        String[][] datos = {{"Dato 1", "Dato 2"}, {"Dato 3", "Dato 4"}};
-        JTable table = new JTable(datos, columnas);
+        String[] columnas = {"id","screenName","followersCount","friendsCount","lang","lastSeen"};
+        modeloTabla.setColumnIdentifiers(columnas);
         JScrollPane tableScrollPane = new JScrollPane(table);
         this.add(tableScrollPane, BorderLayout.CENTER);
+
+        table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer(){
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                JLabel def = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if(column==0){
+                    boolean enc = false;
+                    String id = (String) table.getValueAt(row,0);
+                    ArrayList<String> tags = MapaId.get(id).getTags();
+                    for(String tag:tags){
+                        if (etq.equals(tag)){
+                            def.setBackground(Color.green);
+                            enc = true;
+                            break;
+                        }
+                    }
+                    if(!enc){
+                        def.setBackground(Color.white);
+                    }
+                }
+                return def;
+            }
+        });
+
 
 
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Raíz");
@@ -132,6 +176,26 @@ public class VentanaGeneral extends JFrame {
         JTree tree = new JTree(root);
         JScrollPane treeScrollPane = new JScrollPane(tree);
         this.add(treeScrollPane, BorderLayout.EAST);
+
+        this.add(textField,BorderLayout.NORTH);
+
+        textField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                etq = textField.getText();
+                table.repaint();
+            }
+        });
+        textField.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (textField.getText().equals("Escribe aquí para buscar la etiqueta (enter para buscar)")){
+                    textField.setText("");
+                }
+            }
+        });
+
+
 
         int lineas = (int) contarLineas(archivo);
         JProgressBar progressBar = new JProgressBar(0, lineas);
