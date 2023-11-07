@@ -1,10 +1,14 @@
 package practica0506;
 
 import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -27,8 +31,11 @@ public class VentanaGeneral extends JFrame {
 
     protected static DefaultTableModel modeloTabla = new DefaultTableModel();
     protected static JTable table = new JTable(modeloTabla);
-    static JTextArea textArea = new JTextArea();
-    static JTextField textField = new JTextField("Escribe aquí para buscar la etiqueta (enter para buscar)");
+    protected static JTree tree;
+    JScrollPane treeScrollPane;
+    protected static DefaultTreeModel treeModel;
+    protected static JTextArea textArea = new JTextArea();
+    protected static JTextField textField = new JTextField("Escribe aquí para buscar la etiqueta (enter para buscar)");
     String etq = "";
 
     protected static void genMapaNick(){
@@ -129,14 +136,14 @@ public class VentanaGeneral extends JFrame {
         this.setTitle("Gestión Twitter - Álvaro Amilibia Gascón");
         this.setSize(1700,1000);
         this.setLocationRelativeTo(null);
-
         this.setLayout(new BorderLayout());
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
         String archivo = gestionarFichero();
 
         textArea.setEditable(false);
         JScrollPane textScrollPane = new JScrollPane(textArea);
         this.add(textScrollPane, BorderLayout.WEST);
-
 
         String[] columnas = {"id","screenName","followersCount","friendsCount","lang","lastSeen"};
         modeloTabla.setColumnIdentifiers(columnas);
@@ -162,23 +169,45 @@ public class VentanaGeneral extends JFrame {
                         def.setBackground(Color.white);
                     }
                 }
+                def.setHorizontalAlignment(CENTER);
                 return def;
             }
         });
 
-
-
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode("Raíz");
-        DefaultMutableTreeNode nodo1 = new DefaultMutableTreeNode("Nodo 1");
-        DefaultMutableTreeNode nodo2 = new DefaultMutableTreeNode("Nodo 2");
-        root.add(nodo1);
-        root.add(nodo2);
-        JTree tree = new JTree(root);
-        JScrollPane treeScrollPane = new JScrollPane(tree);
+        treeModel = new DefaultTreeModel(new DefaultMutableTreeNode("Usuario"));
+        tree = new JTree(treeModel);
+        treeScrollPane = new JScrollPane(tree);
         this.add(treeScrollPane, BorderLayout.EAST);
 
-        this.add(textField,BorderLayout.NORTH);
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int fila = table.rowAtPoint(e.getPoint());
+                UsuarioTwitter usuario = MapaId.get(table.getValueAt(fila,0));
+                String nick = usuario.getScreenName();
+                treeModel = new DefaultTreeModel(new DefaultMutableTreeNode(nick));
+                tree.setModel(treeModel);
+            }
+        });
 
+        tree.addTreeSelectionListener(new TreeSelectionListener() {
+            @Override
+            public void valueChanged(TreeSelectionEvent e) {
+                if (tree.getSelectionPath()!= null){
+                   DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent();
+                   String nick = (String) node.getUserObject();
+                   for(int i =0;i < MapaNick.get(nick).getFriends().size();i++){
+                       try{
+                       String idamigo = MapaNick.get(nick).getFriends().get(i);
+                       String nickamigo = MapaId.get(idamigo).getScreenName();
+                       node.add(new DefaultMutableTreeNode(nickamigo));}catch (Exception ex){
+                       }
+                   }
+                }
+            }
+        });
+
+        this.add(textField,BorderLayout.NORTH);
         textField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -194,8 +223,6 @@ public class VentanaGeneral extends JFrame {
                 }
             }
         });
-
-
 
         int lineas = (int) contarLineas(archivo);
         JProgressBar progressBar = new JProgressBar(0, lineas);
@@ -220,19 +247,15 @@ public class VentanaGeneral extends JFrame {
         try {
             hilo.start();
             c.processCSV( new File( archivo ) );
+        }catch (Exception e) {
+            e.printStackTrace();}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         MapaId = c.getMapa();
         genMapaNick();
         recorreAmigos();
         for (UsuarioTwitter x : setAmigos) {
-            textArea.append(x + "\n");
-        }
-        setSize(this.getWidth()+50,this.getHeight());
-
-
+            textArea.append(x + "\n");}
+        setSize(this.getWidth()+1,this.getHeight());
 
     }
 }
