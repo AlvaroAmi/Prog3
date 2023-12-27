@@ -1,9 +1,6 @@
 package practica3_4;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 
 public class Recursividad {
 
@@ -15,6 +12,28 @@ public class Recursividad {
         return original.charAt(original.length()-1) + invertirFrase(original.substring(0,original.length()-1));
         }else{
             return "";
+        }
+    }
+
+    /*
+    4.2. Método invertirPalabras, que recibe un String y lo devuelve invertido palabra a palabra (considerando los
+    separadores habituales espacio, tabulador, salto de línea, símbolos de puntuación), de forma recursiva.
+     */
+
+    public String invertirPalabras(String original){
+        if (original == null || original.length() <= 0) {
+            return "";
+        }
+        StringBuilder sub = new StringBuilder();
+        int index = 0;
+        while (index < original.length() && Character.isLetter(original.charAt(index))) {
+            sub.append(original.charAt(index));
+            index++;
+        }
+        if(index < original.length()){
+            return invertirPalabras(original.substring(index+1)) + original.charAt(index) + sub;
+        }else{
+            return sub.toString();
         }
     }
 
@@ -104,6 +123,10 @@ public class Recursividad {
         //Prueba ejercicio 4.1
         //System.out.println(rec.invertirFrase("Buenas tardes"));
 
+        //Prueba ejercicio 4.2
+        System.out.println(rec.invertirPalabras("Hola, buenas tardes!"));
+
+
         //Prueba ejercicio 4.3
         Carta oro3 = new Carta(3,"oro");
         Carta copa7 = new Carta(7,"copa");
@@ -117,7 +140,7 @@ public class Recursividad {
 
         //rec.posiblesManos(baraja1, 3);
 
-        //Prueba ejercicio 4.4 -> POKER
+        //Prueba ejercicio 4.4
         Carta oro1 = new Carta(1,"oro");
         Carta oro2 = new Carta(2,"oro");
         Carta oro4 = new Carta(4,"oro");
