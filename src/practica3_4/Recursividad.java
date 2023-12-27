@@ -1,6 +1,7 @@
 package practica3_4;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -44,19 +45,48 @@ public class Recursividad {
     una condición de tu elección (por ejemplo, solo las combinaciones que incluyen al menos un as).
      */
 
-    public void filtraManos(ArrayList<Carta> baraja, int n, String palo){
-        filtraManosAux(n,new HashSet<>(),baraja,0, palo);
+    public void filtraManos(ArrayList<Carta> baraja, int n, Filtro filtro){
+        filtraManosAux(n,new HashSet<>(),baraja,0, filtro);
     }
 
-    public void filtraManosAux(int n, HashSet<Carta> comb, ArrayList<Carta> baraja, int inicio, String palo){
+    public void filtraManosAux(int n, HashSet<Carta> comb, ArrayList<Carta> baraja, int inicio, Filtro filtro){
         if (n == 0){
-            Iterator a = comb.iterator();
-            while(a.hasNext()){
-                Object carta = a.next();
-                Carta carta1 = (Carta) carta;
-                if (carta1.getPalo().equals(palo)){
+
+            if (filtro == Filtro.POKER||filtro == Filtro.FULL){
+                if (comb.size() == 5){
+                    HashMap<String, Integer> contadorNumeros = new HashMap<>();
+                    for(Carta carta : comb){
+                        contadorNumeros.put(carta.getPalo(), contadorNumeros.getOrDefault(carta.getPalo(), 0) + 1);
+                    }
+                    switch (filtro){
+                        case POKER:
+                            if(contadorNumeros.containsValue(4)){
+                                System.out.println(comb);
+                            }
+                            break;
+                        case FULL:
+                            if(contadorNumeros.containsValue(3) && contadorNumeros.containsValue(2)){
+                                System.out.println(comb);
+                            }
+                            break;
+                    }
+
+                }
+            }else if (filtro == Filtro.ESCALERA) {
+                ArrayList<Carta> combOrdenado = new ArrayList<>(comb);
+                combOrdenado.sort(Carta::compareTo);
+                boolean escalera = true;
+
+                for (int i = 0; i < combOrdenado.size() - 1; i++) {
+                    if (combOrdenado.get(i).getNumero() != combOrdenado.get(i + 1).getNumero() - 1 ||
+                            !combOrdenado.get(i).getPalo().equals(combOrdenado.get(i + 1).getPalo())) {
+                        escalera = false;
+                        break;
+                    }
+                }
+
+                if (escalera) {
                     System.out.println(comb);
-                    return;
                 }
             }
 
@@ -64,7 +94,7 @@ public class Recursividad {
         for (int i = inicio; i < baraja.size(); i++) {
             HashSet<Carta> combNuevo = new HashSet<>(comb);
             combNuevo.add(baraja.get(i));
-            filtraManosAux(n - 1, combNuevo, baraja, i + 1, palo);
+            filtraManosAux(n - 1, combNuevo, baraja, i + 1,filtro);
         }
     }
 
@@ -87,8 +117,39 @@ public class Recursividad {
 
         //rec.posiblesManos(baraja1, 3);
 
-        //Prueba ejercicio 4.4
-        rec.filtraManos(baraja1, 3, "copa");
+        //Prueba ejercicio 4.4 -> POKER
+        Carta oro1 = new Carta(1,"oro");
+        Carta oro2 = new Carta(2,"oro");
+        Carta oro4 = new Carta(4,"oro");
+        Carta oro5 = new Carta(5,"oro");
+        Carta espada1 = new Carta(1,"espada");
+        Carta espada2 = new Carta(2,"espada");
+        Carta espada3 = new Carta(3,"espada");
+        Carta basto2 = new Carta(2,"basto");
+        Carta basto3 = new Carta(3,"basto");
+        Carta basto4 = new Carta(4,"basto");
+
+        ArrayList<Carta> barajaPrueba = new ArrayList<>();
+        barajaPrueba.add(oro1);
+        barajaPrueba.add(oro2);
+        barajaPrueba.add(oro3);
+        barajaPrueba.add(oro4);
+        barajaPrueba.add(oro5);
+        barajaPrueba.add(copa7);
+        barajaPrueba.add(basto1);
+        barajaPrueba.add(espada10);
+        barajaPrueba.add(espada1);
+        barajaPrueba.add(espada2);
+        barajaPrueba.add(espada3);
+        barajaPrueba.add(basto2);
+        barajaPrueba.add(basto3);
+        barajaPrueba.add(basto4);
+
+
+        //rec.filtraManos(barajaPrueba, 5, Filtro.POKER);
+        //rec.filtraManos(barajaPrueba, 5, Filtro.FULL);
+        //rec.filtraManos(barajaPrueba, 5, Filtro.ESCALERA);
+
     }
 }
 
