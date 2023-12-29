@@ -1,8 +1,10 @@
 package practica3_4;
 
 import java.util.*;
+import java.sql.*;
 
 public class Recursividad {
+    static Connection conn = null;
 
     /*
     4.1. Método invertirFrase, que recibe un String y lo devuelve invertido letra a letra, de forma recursiva
@@ -117,8 +119,94 @@ public class Recursividad {
         }
     }
 
+    public void guardaManos(HashSet<Carta> comb, Filtro filtro) throws SQLException {
+        Statement stmt = conn.createStatement();
 
-    public static void main(String[] args) {
+        //Definir tablas
+        creaTablas();
+
+        //Insertar filtros
+
+    }
+
+    public void creaTablas() throws SQLException {
+        Statement stmt = conn.createStatement();
+
+        String query2 = "CREATE TABLE IF NOT EXISTS MANOFILTRO(CODIGO_FILTRO STRING NOT NULL, CODIGO_MANO STRING NOT NULL, FOREIGN KEY(CODIGO_FILTRO) REFERENCES FILTRO(CODIGO), FOREIGN KEY(CODIGO_MANO) REFERENCES CARTAMANO(CODIGO_CARTAMANO));";
+        insertaDatos();
+        String query3 = "CREATE TABLE IF NOT EXISTS CARTAMANO(CODIGO_CARTAMANO INTEGER PRIMARY KEY AUTOINCREMENT, NUMERO_CARTA INT, PALO_CARTA STRING, FOREIGN KEY(NUMERO_CARTA,PALO_CARTA) REFERENCES CARTA(NUMERO,PALO));";
+
+        stmt.executeUpdate(query2);
+        stmt.executeUpdate(query3);
+
+    }
+
+    private void insertaDatos() throws SQLException {
+        Statement stmt = conn.createStatement();
+
+        //INSERTAR CARTAS
+        String query1 = "DROP TABLE IF EXISTS CARTA;";
+        String query2 = "CREATE TABLE IF NOT EXISTS CARTA(NUMERO INT NOT NULL,PALO STRING NOT NULL, PRIMARY KEY (NUMERO,PALO));";
+
+        stmt.executeUpdate(query1);
+        stmt.executeUpdate(query2);
+
+        //Insertar cada carta de la baraja española
+        ArrayList<String> palos = new ArrayList<>();
+        palos.add("oro"); palos.add("espada"); palos.add("copa"); palos.add("basto");
+
+        for(String palo:palos){
+            for(int i=1;i<13;i++){
+                String query = "INSERT INTO CARTA VALUES(" + i + ", '" + palo + "');";
+                stmt.executeUpdate(query);
+            }
+        }
+
+        //INSERTAR FILTROS
+        String query3 = "DROP TABLE IF EXISTS FILTRO;";
+        String query4 = "CREATE TABLE IF NOT EXISTS FILTRO(CODIGO STRING NOT NULL, DESCRIPION STRING, PRIMARY KEY(CODIGO));";
+
+        stmt.executeUpdate(query3);
+        stmt.executeUpdate(query4);
+
+
+        String query5 = "INSERT INTO FILTRO VALUES('POKER','4 cartas con la misma figura en 5 cartas');";
+        String query6 = "INSERT INTO FILTRO VALUES('FULL',' 3 cartas con la misma figura, 2 cartas con otra figura, en manos de 5 cartas');";
+        String query7 = "INSERT INTO FILTRO VALUES('ESCALERA',' 5 cartas consecutivas del mismo palo');";
+
+        stmt.executeUpdate(query5);
+        stmt.executeUpdate(query6);
+        stmt.executeUpdate(query7);
+
+    }
+
+    public void destruyeTablas() throws SQLException {
+        Statement stmt = conn.createStatement();
+
+        String query1 = "DROP TABLE IF EXISTS CARTA;";
+        String query2 = "DROP TABLE IF EXISTS FILTRO;";
+        String query3 = "DROP TABLE IF EXISTS MANOFILTRO;";
+        String query4 = "DROP TABLE IF EXISTS CARTAMANO;";
+
+        stmt.executeUpdate(query1);
+        stmt.executeUpdate(query2);
+        stmt.executeUpdate(query3);
+        stmt.executeUpdate(query4);
+
+    }
+
+
+    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+        Class.forName("org.sqlite.JDBC");
+
+        try {
+            conn = DriverManager.getConnection(
+                    "jdbc:sqlite:recursividad.db");
+        }catch (SQLException e){
+        }
+
+
+
         Recursividad rec = new Recursividad();
         //Prueba ejercicio 4.1
         //System.out.println(rec.invertirFrase("Buenas tardes"));
@@ -172,6 +260,8 @@ public class Recursividad {
         //rec.filtraManos(barajaPrueba, 5, Filtro.POKER);
         //rec.filtraManos(barajaPrueba, 5, Filtro.FULL);
         //rec.filtraManos(barajaPrueba, 5, Filtro.ESCALERA);
+
+        rec.guardaManos(new HashSet<>(),Filtro.FULL);
 
     }
 }
