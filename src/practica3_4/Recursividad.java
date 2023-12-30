@@ -66,13 +66,12 @@ public class Recursividad {
     una condición de tu elección (por ejemplo, solo las combinaciones que incluyen al menos un as).
      */
 
-    public void filtraManos(ArrayList<Carta> baraja, int n, Filtro filtro){
+    public void filtraManos(ArrayList<Carta> baraja, int n, Filtro filtro) throws SQLException {
         filtraManosAux(n,new HashSet<>(),baraja,0, filtro);
     }
 
-    public void filtraManosAux(int n, HashSet<Carta> comb, ArrayList<Carta> baraja, int inicio, Filtro filtro){
+    public void filtraManosAux(int n, HashSet<Carta> comb, ArrayList<Carta> baraja, int inicio, Filtro filtro) throws SQLException {
         if (n == 0){
-
             if (filtro == Filtro.POKER||filtro == Filtro.FULL){
                 if (comb.size() == 5){
                     HashMap<String, Integer> contadorNumeros = new HashMap<>();
@@ -82,16 +81,17 @@ public class Recursividad {
                     switch (filtro){
                         case POKER:
                             if(contadorNumeros.containsValue(4)){
+                                guardaManos(comb,Filtro.POKER);
                                 System.out.println(comb);
                             }
                             break;
                         case FULL:
                             if(contadorNumeros.containsValue(3) && contadorNumeros.containsValue(2)){
+                                guardaManos(comb,Filtro.FULL);
                                 System.out.println(comb);
                             }
                             break;
                     }
-
                 }
             }else if (filtro == Filtro.ESCALERA) {
                 ArrayList<Carta> combOrdenado = new ArrayList<>(comb);
@@ -107,6 +107,7 @@ public class Recursividad {
                 }
 
                 if (escalera) {
+                    guardaManos(comb,Filtro.ESCALERA);
                     System.out.println(comb);
                 }
             }
@@ -125,7 +126,13 @@ public class Recursividad {
         //Definir tablas
         creaTablas();
 
-        //Insertar filtros
+        String query1 = "INSERT INTO MANOFILTRO VALUES('"+filtro+"','"+comb+"');";
+
+        for(Carta carta : comb){
+            String query2 = "INSERT INTO CARTAMANO VALUES('" + comb + "','" + carta + "');";
+            stmt.executeUpdate(query2);
+        }
+        stmt.executeUpdate(query1);
 
     }
 
@@ -134,7 +141,7 @@ public class Recursividad {
 
         String query2 = "CREATE TABLE IF NOT EXISTS MANOFILTRO(CODIGO_FILTRO STRING NOT NULL, CODIGO_MANO STRING NOT NULL, FOREIGN KEY(CODIGO_FILTRO) REFERENCES FILTRO(CODIGO), FOREIGN KEY(CODIGO_MANO) REFERENCES CARTAMANO(CODIGO_CARTAMANO));";
         insertaDatos();
-        String query3 = "CREATE TABLE IF NOT EXISTS CARTAMANO(CODIGO_CARTAMANO INTEGER PRIMARY KEY AUTOINCREMENT, NUMERO_CARTA INT, PALO_CARTA STRING, FOREIGN KEY(NUMERO_CARTA,PALO_CARTA) REFERENCES CARTA(NUMERO,PALO));";
+        String query3 = "CREATE TABLE IF NOT EXISTS CARTAMANO(CODIGO_CARTAMANO STRING, CODIGO_CARTA, FOREIGN KEY(CODIGO_CARTA) REFERENCES CARTA(CODIGO_CARTA));";
 
         stmt.executeUpdate(query2);
         stmt.executeUpdate(query3);
@@ -146,7 +153,7 @@ public class Recursividad {
 
         //INSERTAR CARTAS
         String query1 = "DROP TABLE IF EXISTS CARTA;";
-        String query2 = "CREATE TABLE IF NOT EXISTS CARTA(NUMERO INT NOT NULL,PALO STRING NOT NULL, PRIMARY KEY (NUMERO,PALO));";
+        String query2 = "CREATE TABLE IF NOT EXISTS CARTA(CODIGO_CARTA INTEGER PRIMARY KEY AUTOINCREMENT,NUMERO INT NOT NULL,PALO STRING NOT NULL);";
 
         stmt.executeUpdate(query1);
         stmt.executeUpdate(query2);
@@ -157,7 +164,7 @@ public class Recursividad {
 
         for(String palo:palos){
             for(int i=1;i<13;i++){
-                String query = "INSERT INTO CARTA VALUES(" + i + ", '" + palo + "');";
+                String query = "INSERT INTO CARTA(NUMERO,PALO) VALUES(" + i + ", '" + palo + "');";
                 stmt.executeUpdate(query);
             }
         }
@@ -257,11 +264,11 @@ public class Recursividad {
         barajaPrueba.add(basto4);
 
 
-        //rec.filtraManos(barajaPrueba, 5, Filtro.POKER);
+        rec.filtraManos(barajaPrueba, 5, Filtro.POKER);
         //rec.filtraManos(barajaPrueba, 5, Filtro.FULL);
         //rec.filtraManos(barajaPrueba, 5, Filtro.ESCALERA);
 
-        rec.guardaManos(new HashSet<>(),Filtro.FULL);
+
 
     }
 }
