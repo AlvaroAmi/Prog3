@@ -212,11 +212,10 @@ public class Recursividad {
         }catch (SQLException e){
         }
 
-
-
         Recursividad rec = new Recursividad();
+        rec.destruyeTablas(); //Resetear base de datos (se puede quitar si de quieren almacenar todas las manos generadas en todas las ejecuciones)
         //Prueba ejercicio 4.1
-        //System.out.println(rec.invertirFrase("Buenas tardes"));
+        System.out.println(rec.invertirFrase("Buenas tardes"));
 
         //Prueba ejercicio 4.2
         System.out.println(rec.invertirPalabras("Hola, buenas tardes!"));
@@ -263,12 +262,9 @@ public class Recursividad {
         barajaPrueba.add(basto3);
         barajaPrueba.add(basto4);
 
-
         rec.filtraManos(barajaPrueba, 5, Filtro.POKER);
         //rec.filtraManos(barajaPrueba, 5, Filtro.FULL);
         //rec.filtraManos(barajaPrueba, 5, Filtro.ESCALERA);
-
-
 
     }
 }
